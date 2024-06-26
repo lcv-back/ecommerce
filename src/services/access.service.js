@@ -2,9 +2,10 @@
 
 const shopModel = require("../models/shop.model");
 const bcrypt = require('bcrypt'); // purpose: hash password to security better
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const KeyTokenService = require("./keyToken.service");
 const { createTokenPair } = require("../auth/authUtils");
+const { getInfoData } = require("../utils");
 
 const RoleShop = {
     SHOP: 'SHOP',
@@ -32,27 +33,28 @@ class AccessService {
             // hash method in bcrypt object have 2 paramester(first: original password, second: salt (complexity of algorithm))
 
             // if shop dont exist, create
-            const newShop = await shopModel.create({ name, email, password, roles: [RoleShop.SHOP] });
+            const newShop = await shopModel.create({ name, email, password: passwordHash, roles: [RoleShop.SHOP] });
 
             // after register is completed then provide the token for user
             if (newShop) {
                 // created privateKey, publicKey
-                const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-                    modulusLength: 4096
-                });
+
+                const privateKey = crypto.randomBytes(64).toString('hex')
+                const publicKey = crypto.randomBytes(64).toString('hex')
 
                 console.log({ privateKey, publicKey }); // save collection KeyStore
 
-                const publicKeyString = await KeyTokenService.createKeyToken({
+                const keyStore = await KeyTokenService.createKeyToken({
                     userId: newShop._id,
-                    publicKey: publicKey
+                    publicKey,
+                    privateKey
                 });
 
-                if (!publicKeyString) {
+                if (!keyStore) {
                     return {
                         code: 'xxx',
                         message: error.message,
-                        status: 'publicKeyString error'
+                        status: 'keyStore error'
                     }
                 }
 
@@ -64,12 +66,14 @@ class AccessService {
                 return {
                     code: 201,
                     metadata: {
-                        shop: newShop,
+                        shop: getInfoData({
+                            fields: ['_id', 'name', 'email'],
+                            object: newShop
+                        }),
                         tokens
                     }
                 }
 
-                // const tokens = await
             }
 
             return {
