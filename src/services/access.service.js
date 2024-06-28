@@ -1,13 +1,13 @@
 'use strict';
 
-const shopModel = require("../models/shop.model");
-const bcrypt = require('bcrypt'); // purpose: hash password to security better
-const crypto = require('node:crypto');
-const KeyTokenService = require("./keyToken.service");
-const { createTokenPair } = require("../auth/authUtils");
-const { getInfoData } = require("../utils");
-const { BadRequestError, ConflictRequestError, AuthFailureError } = require("../core/error.response");
-const { findByEmail } = require("./shop.service");
+const shopModel = require("../models/shop.model")
+const bcrypt = require('bcrypt') // purpose: hash password to security better
+const crypto = require('node:crypto')
+const KeyTokenService = require("./keyToken.service")
+const { createTokenPair } = require("../auth/authUtils")
+const { getInfoData } = require("../utils")
+const { BadRequestError, ConflictRequestError, AuthFailureError } = require("../core/error.response")
+const { findByEmail } = require("./shop.service")
 
 const RoleShop = {
     SHOP: 'SHOP',
@@ -17,6 +17,13 @@ const RoleShop = {
 };
 
 class AccessService {
+    // log out
+    static logout = async(keyStore) => {
+        const delKey = await KeyTokenService.removeKeyById(keyStore._id)
+        console.log({ delKey })
+        return delKey
+    }
+
     /*
         1 - check email in db
         2 - match password

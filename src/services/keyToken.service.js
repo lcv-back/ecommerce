@@ -1,6 +1,10 @@
 'use strict';
 
+const { Types, mongoose } = require("mongoose");
+
+// const { default: mongoose } = require("mongoose");
 const keytokenModel = require("../models/keytoken.model");
+
 
 // create token
 
@@ -10,16 +14,6 @@ class KeyTokenService {
         // so we need to convert to string to store in database if not then occur error
 
         try {
-            // level 0
-            // const tokens = await keytokenModel.create({
-            //     user: userId,
-            //     publicKey,
-            //     privateKey
-            // });
-
-            // if (tokens) return tokens.publicKey;
-            // return null;
-
             const filter = { user: userId },
                 update = {
                     publicKey,
@@ -36,6 +30,14 @@ class KeyTokenService {
             return error;
         }
     };
+
+    static findByUserId = async(userId) => {
+        return await keytokenModel.findOne({ user: userId }).lean()
+    }
+
+    static removeKeyById = async(id) => {
+        return await keytokenModel.deleteOne(id)
+    }
 }
 
 module.exports = KeyTokenService;
