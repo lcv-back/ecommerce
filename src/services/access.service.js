@@ -44,7 +44,7 @@ class AccessService {
         const holderToken = await KeyTokenService.findByRefreshToken(refreshToken)
 
         // if contain but don't reuse
-        if (!holderToken) throw new AuthFailureError('User not registered! 1')
+        if (!holderToken) throw new AuthFailureError('User not registered!')
 
         // verify token
         const { userId, email } = await verifyJWT(refreshToken, holderToken.privateKey)
@@ -54,7 +54,7 @@ class AccessService {
         const foundShop = await findByEmail({ email })
 
         // if dont find email in db
-        if (!foundShop) throw new AuthFailureError('User not registered! 2')
+        if (!foundShop) throw new AuthFailureError('User not registered!')
 
         // create a new token pair
         const tokens = await createTokenPair({ userId, email }, holderToken.publicKey, holderToken.privateKey)
