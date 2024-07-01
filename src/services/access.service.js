@@ -18,59 +18,35 @@ const RoleShop = {
 
 class AccessService {
 
-    // handle refresh token
-    // when token is used then set this token is blacklist
-    // what else generate a new tokens pair
-    static handleRefreshToken = async(refreshToken) => {
-        /*
-            - check this token used
-        */
-        // check token in dbs
-        const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken)
+    static handleRefreshTokenV2 = async({ keyStore, user, refreshToken }) => {
+        const { userId, email } = user
 
-        // if contain
-        if (foundToken) {
-            // decode this user, contain in db?
-            const { userId, email } = await verifyJWT(refreshToken, foundToken.privateKey)
-            console.log({ userId, email })
-
-            // delete this refresh and access token in KeyStore
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
             await KeyTokenService.deleteKeyById(userId)
-
-            throw new ForbiddenError('Sometime went wrong! Please try again')
+            throw new ForbiddenError('Something went wrong! Please try again')
         }
 
-        // if not contain
-        const holderToken = await KeyTokenService.findByRefreshToken(refreshToken)
+        if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered 1')
 
-        // if contain but don't reuse
-        if (!holderToken) throw new AuthFailureError('User not registered!')
-
-        // verify token
-        const { userId, email } = await verifyJWT(refreshToken, holderToken.privateKey)
-        console.log({ userId, email })
-
-        // check userId is correct?
         const foundShop = await findByEmail({ email })
 
-        // if dont find email in db
-        if (!foundShop) throw new AuthFailureError('User not registered!')
 
-        // create a new token pair
-        const tokens = await createTokenPair({ userId, email }, holderToken.publicKey, holderToken.privateKey)
+        if (!foundShop) throw new AuthFailureError('Shop not registered 2')
 
-        // update the refresh token
-        await holderToken.updateOne({
+        const tokens = await createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+
+        // update tokens
+        await keyStore.updateOne({
             $set: {
                 refreshToken: tokens.refreshToken
             },
             $addToSet: {
-                refreshTokensUsed: refreshToken // add current token to refresh token used array
+                refreshTokensUsed: refreshToken
             }
         })
 
         return {
-            user: { userId, email },
+            user,
             tokens
         }
     }
