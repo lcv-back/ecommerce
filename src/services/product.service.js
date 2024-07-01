@@ -3,8 +3,6 @@
 const { product, clothing, electronic } = require('../models/product.model')
 const { BadRequestError, ForbiddenError } = require('../core/error.response')
 
-// polymorphic pattern
-
 // define Factory class to create product
 class ProductFactory {
     /*
@@ -14,7 +12,7 @@ class ProductFactory {
 
     static async createProduct(type, payload) {
         switch (type) {
-            case 'Electronic':
+            case 'Clothing':
                 return new Electronics(payload)
 
             case 'Electronic':
