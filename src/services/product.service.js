@@ -1,21 +1,21 @@
 'use strict'
 
 const { product, clothing, electronic } = require('../models/product.model')
-const { BadRequestError, ForbiddenError } = require('../core/error.response')
+const { BadRequestError } = require('../core/error.response')
 
 // define Factory class to create product
 class ProductFactory {
     /*
-        type: 'Clothing',
+        type: 'Clothing', or 'Electronics
         payload
     */
 
     static async createProduct(type, payload) {
         switch (type) {
-            case 'Clothing':
+            case 'Electronics':
                 return new Electronics(payload)
 
-            case 'Electronic':
+            case 'Clothing':
                 return new Clothing(payload).createProduct()
 
             default:
@@ -55,7 +55,7 @@ class Product {
 // define sub-class for different product types Clothing
 class Clothing extends Product {
     async createProduct() {
-        const newClothing = new clothing.create(this.product_attributes)
+        const newClothing = await clothing.create(this.product_attributes)
         if (!newClothing) throw new BadRequestError('Create new clothing failed')
 
         const newProduct = await super.createProduct()
@@ -68,7 +68,7 @@ class Clothing extends Product {
 // define sub-class for different product types Clothing
 class Electronics extends Product {
     async createProduct() {
-        const newElectronic = new electronic.create(this.product_attributes)
+        const newElectronic = await electronic.create(this.product_attributes)
         if (!newElectronic) throw new BadRequestError('Create new electronic failed')
 
         const newProduct = await super.createProduct()

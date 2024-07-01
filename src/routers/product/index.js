@@ -10,6 +10,7 @@ const { authenticationV2 } = require('../../auth/authUtils')
 // authentication
 router.use(authenticationV2)
 
+// create new product
 router.post('', asyncHandler(productController.createProduct))
 
 module.exports = router
