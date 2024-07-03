@@ -97,6 +97,7 @@ const authenticationV2 = asyncHandler(async(req, res, next) => {
 
             req.keyStore = keyStore
             req.user = decodeUser
+
             req.refreshToken = refreshToken
             return next()
         } catch (error) {
