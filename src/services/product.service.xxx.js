@@ -10,20 +10,21 @@ class ProductFactory {
         payload
     */
 
+    static productRegistry = {
+        // key-class
+    }
+
+    static registerProductType(type, classRef) {
+        ProductFactory.productRegistry[type] = classRef
+    }
+
     static async createProduct(type, payload) {
-        switch (type) {
-            case 'Electronics':
-                return new Electronics(payload).createProduct()
 
-            case 'Clothing':
-                return new Clothing(payload).createProduct()
+        const productClass = ProductFactory.productRegistry[type]
+        if (!productClass) throw new BadRequestError(`Invalid type ${type}`)
 
-            case 'Furniture':
-                return new Furniture(payload).createProduct()
+        return new productClass(payload).createProduct()
 
-            default:
-                throw new BadRequestError(`Invalid Product Type: ${type}`)
-        }
     }
 }
 
@@ -99,5 +100,11 @@ class Furniture extends Product {
         return newProduct
     }
 }
+
+// register product types
+ProductFactory.registerProductType('Clothing', Clothing)
+ProductFactory.registerProductType('Electronics', Electronics)
+ProductFactory.registerProductType('Furniture', Furniture);
+// if have new product then add on here
 
 module.exports = ProductFactory
