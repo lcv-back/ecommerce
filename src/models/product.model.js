@@ -6,6 +6,7 @@ const {
     model,
     Schema
 } = require('mongoose'); // Erase if already required
+const slugify = require('slugify')
 
 const DOCUMENT_NAME = 'Product'
 const COLLECTION_NAME = 'Products'
@@ -20,7 +21,10 @@ const productSchema = new Schema({
         required: true
     },
     product_description: {
-        String
+        type: String
+    },
+    product_slug: {
+        type: String
     },
     product_price: {
         type: Number,
@@ -42,11 +46,47 @@ const productSchema = new Schema({
     product_attributes: {
         type: Schema.Types.Mixed,
         required: true
+    },
+    product_ratingsAverage: {
+        type: Number,
+        default: 4.5,
+        min: [1, 'Rating must be above 1.0'],
+        max: [5, 'Rating must be above 5.0'],
+        // around
+        set: (val) => Math.round(val * 10) / 10
+    },
+    product_variations: {
+        type: Array,
+        default: []
+    },
+    isDraft: {
+        type: Boolean,
+        default: true,
+        index: true,
+        select: false
+    },
+    isPubliced: {
+        type: Boolean,
+        default: false,
+        index: true,
+        select: false
     }
 }, {
     collection: COLLECTION_NAME,
     timestamps: true
 })
+
+// document middeware: run before .save() .create()
+productSchema.pre('save', function(next) {
+    this.product_slug = slugify(this.product_name, {
+            lower: true,
+            remove: /[*+~.()'"!:@]/g, // Remove special characters
+            locale: 'vi' // Set locale to Vietnamese
+        }) // convert product_name to product_slug
+    next();
+})
+
+// create the model
 
 // define the product type = clothing
 const clothingSchema = new Schema({
