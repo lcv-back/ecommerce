@@ -12,7 +12,18 @@ class ProductController {
                 product_shop: req.user.userId
             })
         }).send(res)
-    }
+    };
+
+    // QUERY
+    getAllDraftsForShop = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Get list drafts successfully!',
+            metadata: await ProductService.findAllDraftsForShop({
+                product_shop: req.user.userId
+            })
+        }).send(res)
+    };
+    // END QUERY
 }
 
 module.exports = new ProductController()

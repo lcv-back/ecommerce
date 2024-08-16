@@ -83,7 +83,7 @@ const authentication = asyncHandler(async(req, res, next) => {
 const authenticationV2 = asyncHandler(async(req, res, next) => {
     // if access token is expired => use refresh token => check refresh token have contain
     const userId = req.headers[HEADER.CLIENT_ID]
-    if (!userId) throw new AuthFailureError('Invalid Request')
+    if (!userId) throw new AuthFailureError('Invalid Request on line')
 
     const keyStore = await findByUserId(userId)
     if (!keyStore) throw new NotFoundError('Not found keyStore')

@@ -18,6 +18,14 @@ const RoleShop = {
 
 class AccessService {
 
+    /*
+        step by step to handle refresh token
+        1 - check this token was used?
+
+
+        when refresh token is expired => that user is not allowed to access
+    */
+
     static handleRefreshTokenV2 = async({ keyStore, user, refreshToken }) => {
         const { userId, email } = user
 

@@ -28,6 +28,12 @@ class ProductFactory {
     }
 
     // query
+    /**
+     * @desc get all drafts
+     * @param {Object} product_shop
+     * @param {Number} limit
+     * @param {Number} skip
+     */
     static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
         const query = { product_shop, isDraft: true }
         return await findAllDraftsForShop({ query, limit, skip })
