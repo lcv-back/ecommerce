@@ -77,7 +77,7 @@ class Electronics extends Product {
         })
         if (!newElectronic) throw new BadRequestError('Create new electronic failed')
 
-        const newProduct = await super.createProduct(newElectronic._id)
+        const newProduct = await super.createProduct(newElectronic._id) // use id of electronic for id of product
         if (!newProduct) throw new BadRequestError('Create new product failed')
 
         return newProduct

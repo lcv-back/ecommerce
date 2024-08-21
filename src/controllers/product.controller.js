@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require('../core/success.response')
-const ProductService = require('../services/product.service.xxx')
+const ProductService = require('../services/product.service.xxx') // !!!
 
 class ProductController {
     createProduct = async(req, res, next) => {
@@ -9,7 +9,7 @@ class ProductController {
             message: 'Product created successfully!',
             metadata: await ProductService.createProduct(req.body.product_type, {
                 ...req.body,
-                product_shop: req.user.userId
+                product_shop: req.user.userId // decode from authentication (user, email)
             })
         }).send(res)
     };
