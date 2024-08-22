@@ -13,6 +13,8 @@ router.use(authenticationV2)
 // create new product
 router.post('', asyncHandler(productController.createProduct))
 
+router.post('/publish/:id', asyncHandler(productController.publishProductByShop))
+
 // query
 /**
  * @description Get all drafts for shop
@@ -22,5 +24,11 @@ router.post('', asyncHandler(productController.createProduct))
  * @returns {JSON} 
  */
 router.get('/drafts/all', asyncHandler(productController.getAllDraftsForShop))
+
+
+/**
+ * @description Get all published for shop
+ */
+router.get('/published/all', asyncHandler(productController.getAllPublishForShop))
 
 module.exports = router

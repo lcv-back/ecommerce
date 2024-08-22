@@ -65,7 +65,7 @@ const productSchema = new Schema({
         index: true,
         select: false
     },
-    isPubliced: {
+    isPublished: {
         type: Boolean,
         default: false,
         index: true,
