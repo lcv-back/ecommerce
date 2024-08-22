@@ -11,6 +11,19 @@ const findAllPublishForShop = async({ query, limit, skip }) => {
     return await queryProduct({ query, limit, skip })
 }
 
+const searchProductByUser = async({ keySearch }) => {
+    const regexSearch = new RegExp(keySearch)
+    const results = await product.find({
+            $text: { $search: regexSearch }
+        }, {
+            score: { $meta: 'textScore' }
+        })
+        .sort({ score: { $meta: 'textScore' } })
+        .lean();
+
+    return results
+}
+
 /**
  * @description set 2 condition: isDraft and isPublished is reverse to publish product
  */
@@ -68,5 +81,6 @@ module.exports = {
     findAllDraftsForShop,
     publishProductByShop,
     findAllPublishForShop,
-    unPublishProductByShop
+    unPublishProductByShop,
+    searchProductByUser
 }

@@ -6,7 +6,8 @@ const {
     findAllDraftsForShop,
     publishProductByShop,
     findAllPublishForShop,
-    unPublishProductByShop
+    unPublishProductByShop,
+    searchProductByUser
 } = require('../models/repositories/product.repo')
 
 // define Factory class to create product
@@ -61,6 +62,10 @@ class ProductFactory {
     static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
         const query = { product_shop, isPublished: true, isDraft: false }
         return await findAllPublishForShop({ query, limit, skip })
+    }
+
+    static async searchProducts({ keySearch }) {
+        return await searchProductByUser({ keySearch })
     }
 }
 
