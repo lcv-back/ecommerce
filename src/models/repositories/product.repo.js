@@ -31,6 +31,27 @@ const publishProductByShop = async({ product_shop, product_id }) => {
     const { modifiedCount } = await foundShop.updateOne(foundShop)
 
     return modifiedCount
+};
+/**
+ * @description set 2 condition is reverse to publish: isPublished and isDraft is reverse to publish product
+ */
+const unPublishProductByShop = async({ product_shop, product_id }) => {
+    const foundShop = await product.findOne({
+        product_shop: new Types.ObjectId(product_shop),
+        _id: new Types.ObjectId(product_id)
+    })
+
+    if (!foundShop) {
+        return null
+    }
+
+    // set 2 condition is reverse to publish
+    foundShop.isDraft = true
+    foundShop.isPublished = false
+
+    const { modifiedCount } = await foundShop.updateOne(foundShop)
+
+    return modifiedCount
 }
 
 const queryProduct = async({ query, limit, skip }) => {
@@ -46,5 +67,6 @@ const queryProduct = async({ query, limit, skip }) => {
 module.exports = {
     findAllDraftsForShop,
     publishProductByShop,
-    findAllPublishForShop
+    findAllPublishForShop,
+    unPublishProductByShop
 }

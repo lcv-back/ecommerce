@@ -5,7 +5,8 @@ const { BadRequestError } = require('../core/error.response')
 const {
     findAllDraftsForShop,
     publishProductByShop,
-    findAllPublishForShop
+    findAllPublishForShop,
+    unPublishProductByShop
 } = require('../models/repositories/product.repo')
 
 // define Factory class to create product
@@ -31,9 +32,14 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
-    // put
+    // publish product 
     static async publishProductByShop({ product_shop, product_id }) {
         return await publishProductByShop({ product_shop, product_id })
+    }
+
+    // unpublish product 
+    static async unPublishProductByShop({ product_shop, product_id }) {
+        return await unPublishProductByShop({ product_shop, product_id })
     }
 
     // query

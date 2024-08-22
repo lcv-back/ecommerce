@@ -13,7 +13,11 @@ router.use(authenticationV2)
 // create new product
 router.post('', asyncHandler(productController.createProduct))
 
+// publish new product by seller
 router.post('/publish/:id', asyncHandler(productController.publishProductByShop))
+
+// unpublish product by seller
+router.post('/unpublish/:id', asyncHandler(productController.unPublishProductByShop))
 
 // query
 /**
