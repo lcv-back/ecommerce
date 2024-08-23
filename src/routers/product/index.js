@@ -9,6 +9,9 @@ const { authenticationV2 } = require('../../auth/authUtils')
 // get list search by user, don't need authentication but don't login to system
 router.get('/search/:keySearch', asyncHandler(productController.getListSearchProduct))
 
+// find all products
+router.get('', asyncHandler(productController.findAllProducts))
+
 
 // authentication
 router.use(authenticationV2)
