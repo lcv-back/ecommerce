@@ -2,7 +2,7 @@
 
 const { product } = require('../../models/product.model')
 const { Types } = require('mongoose')
-const { getSelectData } = require('../../utils')
+const { getSelectData, unGetSelectData } = require('../../utils')
 
 
 const findAllDraftsForShop = async({ query, limit, skip }) => {
@@ -25,6 +25,10 @@ const findAllProducts = async({ limit, sort, page, filter, select }) => {
         .lean()
 
     return products
+}
+
+const findProduct = async({ product_id, unSelect }) => {
+    return await product.findById(product_id).select(unGetSelectData(unSelect))
 }
 
 const searchProductByUser = async({ keySearch }) => {
@@ -100,5 +104,6 @@ module.exports = {
     findAllPublishForShop,
     unPublishProductByShop,
     searchProductByUser,
-    findAllProducts
+    findAllProducts,
+    findProduct
 }
