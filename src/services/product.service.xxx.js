@@ -9,8 +9,10 @@ const {
     unPublishProductByShop,
     searchProductByUser,
     findAllProducts,
-    findProduct
+    findProduct,
+    updateProductById
 } = require('../models/repositories/product.repo')
+const { removeUndefinedObject, updateNestedObjectParser } = require('../utils')
 
 // define Factory class to create product
 class ProductFactory {
@@ -35,12 +37,12 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
-    static async updateProduct(type, payload) {
+    static async updateProduct(type, productId, payload) {
 
         const productClass = ProductFactory.productRegistry[type]
         if (!productClass) throw new BadRequestError(`Invalid type ${type}`)
 
-        return new productClass(payload).createProduct()
+        return new productClass(payload).updateProduct(productId)
     }
 
     // publish product 
@@ -123,6 +125,11 @@ class Product {
     async createProduct(product_id) {
         return await product.create({...this, _id: product_id })
     }
+
+    // update product
+    async updateProduct(productId, bodyUpdate) {
+        return await updateProductById({ productId, bodyUpdate, model: product })
+    }
 }
 
 // define sub-class for different product types Clothing
@@ -135,6 +142,34 @@ class Clothing extends Product {
         if (!newProduct) throw new BadRequestError('Create new product failed')
 
         return newProduct
+    }
+
+    async updateProduct(productId) {
+        /*
+            Constraints: data is truth
+        */
+
+        // 1. Remove attributes is underfine of null
+        // console.log(`[1]::`, this);
+        const objectParams = removeUndefinedObject(this);
+        // console.log(`[2]::`, objectParams);
+
+        // 2. Check where at update?
+        if (objectParams.product_attributes) {
+            // update child
+            await updateProductById({
+                productId,
+                bodyUpdate: updateNestedObjectParser(objectParams.product_attributes),
+                model: clothing
+            })
+        }
+
+        const updateProduct = await super.updateProduct(
+            productId,
+            updateNestedObjectParser(objectParams)
+        )
+
+        return updateProduct
     }
 }
 
@@ -151,6 +186,24 @@ class Electronics extends Product {
         if (!newProduct) throw new BadRequestError('Create new product failed')
 
         return newProduct
+    }
+
+    async updateProduct(productId) {
+        /*
+            Constraints: data is truth
+        */
+
+        // 1. Remove attributes is underfine of null
+        const objectParams = this;
+        // 2. Check where at update?
+        if (objectParams.product_attributes) {
+            // update child
+            await updateProductById({ productId, objectParams, model: electronic })
+        }
+
+        const updateProduct = await super.updateProduct(productId, objectParams)
+
+        return updateProduct
     }
 }
 
