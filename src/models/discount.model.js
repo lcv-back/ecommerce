@@ -26,11 +26,11 @@ const discountSchema = new Schema({
         type: String,
         required: true
     }, // discountCode
-    discount_start_day: {
+    discount_start_date: {
         type: Date,
         required: true
     }, // ngay dat dau
-    discount_end_day: {
+    discount_end_date: {
         type: Date,
         required: true
     }, // ngay ket thuc
