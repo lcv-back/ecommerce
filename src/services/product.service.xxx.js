@@ -135,10 +135,13 @@ class Product {
 // define sub-class for different product types Clothing
 class Clothing extends Product {
     async createProduct() {
-        const newClothing = await clothing.create(this.product_attributes)
+        const newClothing = await clothing.create({
+            ...this.product_attributes,
+            product_shop: this.product_shop
+        })
         if (!newClothing) throw new BadRequestError('Create new clothing failed')
 
-        const newProduct = await super.createProduct()
+        const newProduct = await super.createProduct(newClothing._id)
         if (!newProduct) throw new BadRequestError('Create new product failed')
 
         return newProduct
@@ -164,6 +167,7 @@ class Clothing extends Product {
             })
         }
 
+        // update parent
         const updateProduct = await super.updateProduct(
             productId,
             updateNestedObjectParser(objectParams)
