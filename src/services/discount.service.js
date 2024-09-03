@@ -6,6 +6,7 @@ const {
 } = require('../core/error.response')
 
 const discount = require('../models/discount.model');
+const { findAllProducts } = require('../models/repositories/product.repo');
 const { convertToObjectIdMongodb } = require('../utils');
 
 class DiscountService {
@@ -74,5 +75,57 @@ class DiscountService {
 
     static async updateDiscountCode() {
         // ...
+    }
+
+    static async getAllDiscountCodesWithProduct({
+        code,
+        shopId,
+        userId,
+        limit,
+        page
+    }) {
+        // create index for discount_code
+        const foundDiscount = discount.findOne({
+            discount_code: code,
+            discount_shopId: convertToObjectIdMongodb(shopId)
+        }).lean()
+
+        if (!foundDiscount || !foundDiscount.discount_is_active) {
+            throw new NotFoundError('The discount does not exsit')
+        }
+
+        const { discount_applies_to, discount_product_ids } = foundDiscount
+
+        let products
+
+        if (discount_applies_to === 'all') {
+            // get all products
+            products = await findAllProducts({
+                filter: {
+                    product_shop: convertToObjectIdMongodb(shopId),
+                    isPublished: true
+                },
+                limit: +limit,
+                page: +page,
+                sort: 'ctime',
+                select: ['product_name']
+            })
+        }
+
+        if (discount_applies_to === 'specific') {
+            // get products by ids
+            products = await findAllProducts({
+                filter: {
+                    _id: { $in: discount_product_ids },
+                    isPublished: true
+                },
+                limit: +limit,
+                page: +page,
+                sort: 'ctime',
+                select: ['product_name']
+            })
+        }
+
+        return products
     }
 }
