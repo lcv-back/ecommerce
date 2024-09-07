@@ -49,11 +49,11 @@ const discountSchema = new Schema({
     discount_max_uses_per_user: {
         type: Number,
         required: true
-    }, // so luong cho phep toi da duoc su dung moi user
+    }, // so luong cho phep toi da duoc su dung o moi user
     discount_min_order_value: {
         type: Number,
         required: true
-    },
+    }, // so luong don gian toi phieu
     discount_shopId: {
         type: Schema.Types.ObjectId,
         ref: 'Shop'
