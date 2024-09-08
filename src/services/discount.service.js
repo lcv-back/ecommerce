@@ -224,6 +224,7 @@ class DiscountService {
         }
     }
 
+    // delete discout code if discount code is expied
     static async deleteDiscountCode({ shopId, codeId }) {
         // ki hon thi can kiem tra discount do co dang duoc su dung o product nao hay khong
         const deleted = await discount.findOneAndDelete({
@@ -233,4 +234,36 @@ class DiscountService {
 
         return deleted
     }
+
+    /*
+        Cancel discount code if it contains any problem
+
+    */
+
+    // cancel discount code is it contains any problem
+    static async cancelDiscountCode({ codeId, shopId, userId }) {
+        const foundDiscount = await checkDiscountExists({
+            model: discount,
+            filter: {
+                discount_code: codeId,
+                discount_shopId: convertToObjectIdMongodb(shopId)
+            }
+        })
+
+        if (!foundDiscount) throw new NotFoundError('Discount not found')
+
+        const result = await discount.findByIdAndUpdate(foundDiscount._id, {
+            $pull: {
+                discount_users_used: userId
+            },
+            $inc: {
+                discount_max_uses: -1,
+                discount_uses_count: -1
+            }
+        })
+
+        return result
+    }
 }
+
+module.exports = DiscountService
