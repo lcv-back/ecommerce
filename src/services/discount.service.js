@@ -178,15 +178,16 @@ class DiscountService {
             discount_users_used
         } = foundDiscount
 
-        if (!discount_is_active) {
+        if (!discount_is_active) { // het han su dung
             throw new NotFoundError(`Discount expired`)
         }
 
-        if (!discount_max_uses) { // = 0
+        if (!discount_max_uses) { // het so luong su dung
             throw new NotFoundError(`This discount has reached its maximum usage`)
         }
 
         if (new Date() < new Date(discount_start_date) || new Date(discount_end_date) < new Date()) {
+            // discount ko hop le
             throw new NotFoundError(`Discount code has expired`)
         }
 
@@ -199,15 +200,17 @@ class DiscountService {
             }, 0)
 
             if (totalOrder < discount_min_order_value) {
+                // gia tien tong cac san pham nho hon so voi so tien toi thieu duoc giam gia
                 throw new NotFoundError(`Discount requires a minimum of ${discount_min_order_value}`)
             }
         }
 
         if (!discount_max_uses_per_user > 0) {
-            // neu user do da tung su dung discount nay va so luong toi da discount for user only one
+            // neu user do da tung su dung discount nay va so luong toi da discount doi voi nguoi dung chi la 1
             const userUseDiscount = discount_users_used.find(user => user.userId === userId)
             if (userUseDiscount) {
                 // user used to that discount
+                throw new NotFoundError(`You have already used this discount code`)
             }
         }
 
@@ -219,5 +222,15 @@ class DiscountService {
             discount: amount,
             totalPrice: totalOrder - amount
         }
+    }
+
+    static async deleteDiscountCode({ shopId, codeId }) {
+        // ki hon thi can kiem tra discount do co dang duoc su dung o product nao hay khong
+        const deleted = await discount.findOneAndDelete({
+            discount_code: codeId,
+            discount_shopId: convertToObjectIdMongodb(shopId)
+        })
+
+        return deleted
     }
 }
