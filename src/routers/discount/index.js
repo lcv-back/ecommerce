@@ -20,6 +20,6 @@ router.use(authenticationV2)
 router.post('', asyncHandler(discountController.createDiscountCode))
 
 // get all discount code with product
-router.get('', asyncHandler(discountController.getAllDiscountCodeWithProducts))
+router.get('', asyncHandler(discountController.getAllDiscountCodes))
 
 module.exports = router

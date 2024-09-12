@@ -19,7 +19,7 @@ class DiscountController {
     getAllDiscountCodes = async(req, res, next) => {
         new SuccessResponse({
             message: 'All discount codes fetched successfully!',
-            metadata: await DiscountService.getAllDiscountCodeByShop({
+            metadata: await DiscountService.getAllDiscountCodesByShop({
                 ...req.query,
                 shopId: req.user.userId
             })
@@ -40,7 +40,7 @@ class DiscountController {
     getAllDiscountCodeWithProducts = async(req, res, next) => {
         new SuccessResponse({
             message: 'Discount code with products was found!',
-            metadata: await DiscountService.getAllDiscountCodeWithProducts({
+            metadata: await DiscountService.getAllDiscountCodesWithProduct({
                 ...req.query
             })
         }).send(res)

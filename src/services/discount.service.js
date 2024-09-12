@@ -1,5 +1,24 @@
 'use strict';
 
+/*
+    Discount Services
+    1 - Generator discount code 
+        Shop: Voucher for shop
+        Admin: Voucher for global
+    2 - Get discount amount
+        User
+    3- Get all discount codes
+        Shop: Management
+        User
+    4 - Verify discount code
+        User
+    5 - Delete discount codes
+        Shop
+        Admin
+    6 - Cancel discount codes
+        User
+*/
+
 const {
     BadRequestError,
     NotFoundError
@@ -36,7 +55,7 @@ class DiscountService {
             users_used
         } = payload
 
-        // kiem tra
+        // check the valid time
         if (new Date() < new Date(start_date) || new Date() > new Date(end_date)) {
             throw new BadRequestError('Discount code has expired! Please try again')
         }
@@ -90,10 +109,11 @@ class DiscountService {
         page
     }) {
         // create index for discount_code
-        const foundDiscount = discount.findOne({
+        const foundDiscount = await discount.findOne({
             discount_code: code,
             discount_shopId: convertToObjectIdMongodb(shopId)
         }).lean()
+
 
         if (!foundDiscount || !foundDiscount.discount_is_active) {
             throw new NotFoundError('The discount does not exsit')
@@ -134,7 +154,7 @@ class DiscountService {
         return products
     }
 
-    static async getAllDiscountCodeByShop({
+    static async getAllDiscountCodesByShop({
         limit,
         page,
         shopId
@@ -160,13 +180,10 @@ class DiscountService {
 
     static async getDiscountAmount({ codeId, userId, shopId, products }) {
         // check discount is available
-        const foundDiscount = await checkDiscountExists({
-            model: discount,
-            filter: {
-                discount_code: codeId,
-                discount_shopId: convertToObjectIdMongodb(shopId)
-            }
-        })
+        const foundDiscount = await discount.findOne({
+            discount_code: codeId,
+            discount_shopId: convertToObjectIdMongodb(shopId)
+        }).lean()
 
         if (!foundDiscount) throw new NotFoundError(`Discount not found`)
 
@@ -193,7 +210,7 @@ class DiscountService {
 
         // check if was set least value?
         let totalOrder = 0
-        if (!discount_min_order_value > 0) {
+        if (discount_min_order_value > 0) {
             // get total value
             totalOrder = products.reduce((acc, product) => {
                 return acc + (product.quantity * product.price)
@@ -205,7 +222,7 @@ class DiscountService {
             }
         }
 
-        if (!discount_max_uses_per_user > 0) {
+        if (discount_max_uses_per_user > 0) {
             // neu user do da tung su dung discount nay va so luong toi da discount doi voi nguoi dung chi la 1
             const userUseDiscount = discount_users_used.find(user => user.userId === userId)
             if (userUseDiscount) {
@@ -257,7 +274,7 @@ class DiscountService {
                 discount_users_used: userId
             },
             $inc: {
-                discount_max_uses: -1,
+                discount_max_uses: 1,
                 discount_uses_count: -1
             }
         })
