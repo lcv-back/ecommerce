@@ -192,7 +192,12 @@ class DiscountService {
             discount_max_uses,
             discount_min_order_value,
             discount_max_uses_per_user,
-            discount_users_used
+            discount_users_used,
+            discount_start_date,
+            discount_end_date,
+            discount_value,
+            discount_max_value,
+            discount_type,
         } = foundDiscount
 
         if (!discount_is_active) { // het han su dung
@@ -201,11 +206,6 @@ class DiscountService {
 
         if (!discount_max_uses) { // het so luong su dung
             throw new NotFoundError(`This discount has reached its maximum usage`)
-        }
-
-        if (new Date() < new Date(discount_start_date) || new Date(discount_end_date) < new Date()) {
-            // discount ko hop le
-            throw new NotFoundError(`Discount code has expired`)
         }
 
         // check if was set least value?
