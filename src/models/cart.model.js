@@ -9,7 +9,8 @@ const cartSchema = new Schema({
     cart_state: {
         type: String,
         required: true,
-        enum: ['active', 'completed', 'failed', 'pending']
+        enum: ['active', 'completed', 'failed', 'pending'],
+        default: 'active'
     },
     cart_products: {
         type: Array,
@@ -39,7 +40,7 @@ const cartSchema = new Schema({
     }
 }, {
     collection: COLLECTION_NAME,
-    timestamps
+    timestamps: true
 })
 
 module.exports = model(DOCUMENT_NAME, cartSchema)
