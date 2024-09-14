@@ -10,7 +10,7 @@ const asyncHandler = require('../../helpers/asyncHandler')
 // Add to cart: Test done
 router.post('', asyncHandler(cartController.addToCart))
 
-
+// Delete cart item: Test done
 router.delete('', asyncHandler(cartController.deleteUserCart))
 
 
