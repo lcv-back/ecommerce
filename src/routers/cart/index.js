@@ -16,7 +16,7 @@ router.delete('', asyncHandler(cartController.deleteUserCart))
 
 router.post('', asyncHandler(cartController.updateCart))
 
-
+// List cart allocate cart items: Test done
 router.get('', asyncHandler(cartController.listOnCart))
 
 module.exports = router
