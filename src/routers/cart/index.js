@@ -13,8 +13,8 @@ router.post('', asyncHandler(cartController.addToCart))
 // Delete cart item: Test done
 router.delete('', asyncHandler(cartController.deleteUserCart))
 
-
-router.post('', asyncHandler(cartController.updateCart))
+// Update cart items: Test done
+router.post('/update', asyncHandler(cartController.updateCart))
 
 // List cart allocate cart items: Test done
 router.get('', asyncHandler(cartController.listOnCart))

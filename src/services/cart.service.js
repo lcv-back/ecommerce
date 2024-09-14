@@ -38,7 +38,7 @@ class CartService {
         return await cart.findOneAndUpdate(query, updateOrInsert, options)
     }
 
-    static async updateUserCartQuantity([userId, product]) {
+    static async updateUserCartQuantity({ userId, product }) {
         const { productId, quantity } = product
 
         const query = {
@@ -99,12 +99,16 @@ class CartService {
         ]
     */
 
-    static async updateCart({ userId, product = {} }) {
+    static async updateCart({ userId, shop_order_ids }) {
         const itemProduct = shop_order_ids[0] && shop_order_ids[0].item_products ? shop_order_ids[0].item_products[0] : {};
         const { productId, quantity, old_quantity } = itemProduct;
+        console.log({ productId, quantity, old_quantity });
 
-        // check product is contain
+
+        // check product
         const foundProduct = await getProductById(productId);
+
+        console.log(foundProduct);
 
         if (!foundProduct) throw new NotFoundError('Product not found!')
 

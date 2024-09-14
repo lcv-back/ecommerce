@@ -56,7 +56,7 @@ const searchProductByUser = async({ keySearch }) => {
     return results
 }
 
-const getProductById = async({ productId }) => {
+const getProductById = async(productId) => {
     return await product.findOne({ _id: convertToObjectIdMongodb(productId) }).lean()
 }
 
