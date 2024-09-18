@@ -50,13 +50,14 @@ class CheckoutService {
             shop_order_ids_new = []
 
         // tinh tong tien bill
-        for (let index = 0; index < shop_order_ids.length; index++) {
+        for (let i = 0; i < shop_order_ids.length; i++) {
             const { shopId, shop_discounts = [], item_products = [] } = shop_order_ids[i]
 
             // check product is available
             const checkProductServer = await checkProductByServer(item_products)
             console.log(`checkProductServer::`, checkProductServer)
 
+            // if any item_product is invalid
             if (!checkProductServer[0]) throw new BadRequestError('Order wrong')
 
             // tong tien don hang
@@ -67,6 +68,7 @@ class CheckoutService {
             // tong tien truoc khi xu ly
             checkout_order.totalPrice += checkoutPrice
 
+            // push vao order new   
             const itemCheckout = {
                 shopId,
                 shop_discounts,

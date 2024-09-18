@@ -62,6 +62,7 @@ const getProductById = async(productId) => {
 
 const checkProductByServer = async(products) => {
     return await Promise.all(products.map(async product => {
+        // kiem tra product co hop le trong db khong
         const foundProduct = await getProductById(product.productId)
         if (foundProduct) {
             return {
