@@ -106,10 +106,37 @@ class CheckoutService {
 
         }
 
+        // Trong he thong lon, thi trackking hanh vi nguoi dung, save vao 1 bo nho tam roi kiem tra hang ton kho
+
         return {
             shop_order_ids,
             shop_order_ids_new,
             checkout_order
+        }
+    }
+
+    static async orderByUser({
+        shop_order_ids,
+        cartId,
+        userId,
+        user_address = {},
+        user_payment = {}
+    }) {
+        const { shop_order_ids_new, checkout_order } = await CheckoutService.checkoutReview({
+            cartId,
+            userId,
+            shop_order_ids
+        })
+
+        // kiem tra 1 lan nua xem co vuot ton kho hay khong
+        // get new array Products
+        const products = shop_order_ids_new.flagMap(order => order.item_products)
+        console.log(`[1]::`, products)
+
+        // den buoc cuoi cung thi kiem tra hang ton kho ma lon hon so luong nguoi dung thi moi chap nhan
+        for (let i = 0; i < array.length; i++) {
+            const element = array[i];
+
         }
     }
 

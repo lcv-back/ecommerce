@@ -216,9 +216,6 @@ class DiscountService {
                 return acc + (product.quantity * product.price)
             }, 0)
 
-            console.log(`Total order value: ${totalOrder}, Min required: ${discount_min_order_value}`);
-
-
             if (totalOrder < discount_min_order_value) {
                 // gia tien tong cac san pham can toi thieu lon hon hoac bang so voi so tien toi thieu duoc giam gia
                 throw new NotFoundError(`Order requires a minimum of ${discount_min_order_value}`)
