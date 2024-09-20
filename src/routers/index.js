@@ -17,6 +17,9 @@ router.use('/v1/api/checkout', require('./checkout'))
 // router for discount
 router.use('/v1/api/discount', require('./discount'))
 
+// router for inventory
+router.use('/v1/api/inventory', require('./inventory'))
+
 // router for cart
 router.use('/v1/api/cart', require('./cart'))
 

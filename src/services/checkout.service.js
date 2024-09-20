@@ -3,7 +3,10 @@
 const { findCartById } = require("../models/repositories/cart.repo");
 const { BadRequestError } = require('../core/error.response');
 const { checkProductByServer } = require("../models/repositories/product.repo");
-const { getDiscountAmount } = require('./discount.service')
+const { getDiscountAmount } = require('./discount.service');
+const { releaseLock } = require("./redis.service");
+const order = require('../models/order.model');
+
 
 /*
     Order Services
@@ -133,11 +136,70 @@ class CheckoutService {
         const products = shop_order_ids_new.flagMap(order => order.item_products)
         console.log(`[1]::`, products)
 
-        // den buoc cuoi cung thi kiem tra hang ton kho ma lon hon so luong nguoi dung thi moi chap nhan
-        for (let i = 0; i < array.length; i++) {
-            const element = array[i];
+        const acquireProduct = []
 
+        // den buoc cuoi cung thi kiem tra hang ton kho ma lon hon so luong nguoi dung thi moi chap nhan
+        for (let i = 0; i < products.length; i++) {
+            const { productId, quantity } = products[i];
+            const keyLock = await acquireLock(productId, quantity, cartId)
+            acquireProduct.push(keyLock ? true : false)
+
+            if (keyLock) {
+                await releaseLock(keyLock)
+            }
         }
+
+        // kiem tra neu co san pham het hang trong kho
+        if (acquireProduct.includes(false)) {
+            throw new BadRequestError('Any product was updated, retry back to your cart')
+        }
+
+        const newOrder = await order.create({
+            order_userId: userId,
+            order_checkout: checkout_order,
+            order_shipping: user_address,
+            order_payment: user_payment,
+            order_products: shop_order_ids_new,
+        })
+
+        // truong hop: insert thanh cong, thi remove product co trong cart
+        if (newOrder) {
+            // remove product on cart
+        }
+
+        return newOrder
+    }
+
+    /*
+        1> Query Order [Users]: Get total order on current cart
+    */
+
+    static async getOrdersByUser() {
+
+    }
+
+    /*
+        2> Query Order using Id [Users]: Get total order using id on current cart
+    */
+
+    static async getOrderByUser() {
+
+    }
+
+    /*
+        3> Cancel Order [Users]: Cancel the order by users
+    */
+
+    static async cancelOrder() {
+
+    }
+
+    /*
+        4> Update Order Status [Shop | Admin]: Update the order by shop and admin
+    */
+
+    static async updateOrderStatus() {
+
     }
 
 }
