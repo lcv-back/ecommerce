@@ -1,0 +1,13 @@
+A product slug là một đoạn văn bản ngắn và duy nhất được sử dụng trong URL của một sản phẩm trên trang web. 
+Nó thường là một phiên bản đã được làm sạch và tối ưu hóa của tên sản phẩm, nhằm giúp các công cụ tìm kiếm hiểu và 
+index trang web dễ dàng hơn, đồng thời làm cho URL trở nên thân thiện với người dùng.
+
+Ví dụ:
+
+Tên sản phẩm: "Áo thun nam màu xanh"
+Product slug: "ao-thun-nam-mau-xanh"
+Trong URL của trang sản phẩm, product slug thường xuất hiện sau tên miền chính, 
+ví dụ: www.example.com/ao-thun-nam-mau-xanh. 
+Việc sử dụng product slug giúp cải thiện SEO (Search Engine Optimization) và cung cấp trải nghiệm người dùng tốt hơn.
+
+de su dung => download package 'slugify'

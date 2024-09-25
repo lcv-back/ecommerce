@@ -1,0 +1,20 @@
+// document middeware: runs before .save() .create()
+productSchema.pre('save', function(next) {
+    this.product_slug = slugify(this.product_name, { lower: true })
+    next()
+})
+
+Giải Thích
+- Hàm Middleware: Hàm này được kích hoạt trước khi một tài liệu được lưu vào cơ sở dữ liệu.
+- Slugification: Hàm này sử dụng slugify để chuyển đổi thuộc tính product_name thành product_slug thân thiện với URL.
+- Hàm slugify chuyển đổi một chuỗi ký tự thành một slug, là một phiên bản thân thiện với URL của chuỗi ký tự đó.
+- Tùy chọn { lower: true } đảm bảo rằng slug sẽ được viết thường, giúp nó nhất quán và thân thiện với SEO.
+- Hàm next(): Sau khi thiết lập product_slug, hàm next() được gọi để tiếp tục thực thi middleware tiếp theo. 
+- Nếu không có middleware nào tiếp theo, tài liệu sẽ được lưu.
+
+Điểm Chính
+- Hàm Slugify: Chuyển đổi product_name thành slug thân thiện với URL.
+- Tùy Chọn Viết Thường: Đảm bảo slug được viết thường để nhất quán.
+- Hook Pre-save: Middleware pre('save', function(next) {...}) đảm bảo product_slug luôn được cập nhật trước khi 
+- lưu tài liệu.
+- Thiết lập này giúp duy trì các URL nhất quán và thân thiện với SEO cho từng sản phẩm trong cơ sở dữ liệu.

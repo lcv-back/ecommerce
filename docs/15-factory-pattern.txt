@@ -1,0 +1,54 @@
+Factory Pattern là một trong những mẫu thiết kế (design pattern) thuộc nhóm creational patterns. 
+Nó cung cấp một cách để tạo ra các đối tượng mà không cần phải chỉ rõ lớp chính xác của đối tượng sẽ được tạo ra.
+Điều này đặc biệt hữu ích trong các trường hợp khi lớp chính xác của đối tượng cần được quyết định tại runtime.
+
+Cách triển khai Factory Pattern trong Node.js
+Dưới đây là một ví dụ về cách triển khai Factory Pattern trong Node.js.
+
+Bước 1: Tạo các lớp đối tượng cụ thể
+class Dog {
+  speak() {
+    return 'Woof!';
+  }
+}
+
+class Cat {
+  speak() {
+    return 'Meow!';
+  }
+}
+
+Bước 2: Tạo Factory để tạo các đối tượng
+class AnimalFactory {
+  static createAnimal(type) {
+    switch(type) {
+      case 'dog':
+        return new Dog();
+      case 'cat':
+        return new Cat();
+      default:
+        throw new Error('Unknown animal type');
+    }
+  }
+}
+
+Bước 3: Sử dụng Factory để tạo các đối tượng
+const animal1 = AnimalFactory.createAnimal('dog');
+console.log(animal1.speak());  // Output: Woof!
+
+const animal2 = AnimalFactory.createAnimal('cat');
+console.log(animal2.speak());  // Output: Meow!
+
+Giải thích
+Các lớp đối tượng cụ thể (Dog, Cat): Đây là các lớp đại diện cho các loại đối tượng cụ thể mà chúng ta muốn tạo ra.
+Factory (AnimalFactory): Lớp này chịu trách nhiệm tạo ra các đối tượng. 
+Nó có một phương thức tĩnh (static) tên là createAnimal, phương thức này nhận một tham số type 
+và dựa vào giá trị của tham số này để quyết định đối tượng nào sẽ được tạo ra.
+Sử dụng Factory: Thay vì trực tiếp tạo ra các đối tượng bằng từ khóa new, chúng ta 
+sử dụng AnimalFactory.createAnimal để tạo các đối tượng.
+
+Lợi ích của Factory Pattern
+Tách biệt việc khởi tạo đối tượng: Client code không cần phải biết chi tiết về việc khởi tạo đối tượng.
+Dễ dàng mở rộng: Khi có yêu cầu thêm các loại đối tượng mới, chỉ cần thêm các lớp đối tượng mới 
+và cập nhật factory mà không cần thay đổi client code.
+Tăng tính linh hoạt: Dễ dàng thay đổi lớp của đối tượng mà không ảnh hưởng đến client code.

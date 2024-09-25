@@ -1,0 +1,70 @@
+- session 1: introduction to course
+----------------------------------------------------------------
+- session 2: introduction to architecture
+    - install folder and necessary dependencies
+        - folders:
+            - configs
+            - controllers
+            - models
+            - services
+            - utils: allocate function have use n times
+        - dependencies:
+            - express
+            - morgan: show logs
+                5 types:
+                    - dev: GET / 200 1.772 ms - 21 
+                    - combined: ::1 - - [12/Jun/2024:03:01:35 +0000] "GET / HTTP/1.1" 200 21 "-" "curl/8.5.0" (standard by Apache)
+                    - common: ::1 - - [12/Jun/2024:03:02:41 +0000] "GET / HTTP/1.1" 200 21
+                    - short: ::1 - GET / HTTP/1.1 200 21 - 1.964 ms
+                    - tiny: GET / 200 21 - 2.482 ms
+            - helmet: address, filter any http toxic headers
+            - compression: optimize payload weights
+----------------------------------------------------------------
+- session 3: connect mongodb to nodejs using mongoose and 7 things needed to deployment on system
+    dependencies: mongoose
+    1. unadvantaged of the old way connect db
+        - created many connects 
+    2. the new way connect
+        - using singleton patern (design patern): create 1 connect, call only one
+    3. check the system have how many connects
+        - use the connections method in mongoose object and count length of result 
+        - that line: const numConnections = mongoose.connections.length;
+    4. notify when server overload connects
+        - use the setInterval method to check every xx seconds and to do operator (count connections
+        and check maximum number of connections)
+        - compare the maximum number of connections and current number of connections, if bigger than then overload
+    5. have to disconnect() consistency?
+        - don't needed
+        - because use the pool (a set connect to manage DBMS) automatically open and close connect when necessary
+        - although can disconnect() by hand
+    6. what is the poolsize? important?
+        - in mongoose, a set connects can refactor was maintained by mongoose (poolsize is that set)
+        - advantage: reduce fee database and close connect to database
+        - default poolsize: 100
+    7. if the poolsize is overcome
+        - if overcome in poolsize then that connect occured then to stack 
+            and waiting for the difference connect completed
+----------------------------------------------------------------
+- session 4: use .env file and combination .env file and configs folder for any project
+    - why should we use .env file?
+        - protect any sensitive information (nhay cam) avoid the other people
+    - dependency: dotenv
+    - setup dev_app_port and production_app_port 
+    - setup dev_db_port, host and name and production_db_port, host and name
+----------------------------------------------------------------
+session 5: design api sign-up shop
+    - design 'shop' model
+    - write the first api: sign-up api (/v1/api/shop/signup)
+    - write access.controller in controller folder and write basic information for sign up api
+    - create shop folder on routers folder to specific for post, get,... for shop model
+    - write access.service 
+        - use lean() method to query email exist can reduce the size of data
+        - if email dont exist, create
+            - hash password by using bcrypt and save it on the database
+                - hash method in bcrypt object have 2 paramester(first: original password, second: salt (complexity of algorithm))
+        - after register is completed then provide the token for user
+            - the private key: dont save it, sign token
+            - the public key: save it on the database, verify token
+            - when hacker attack the system can get the public ket but the private key is not
+        - design the keyToken model
+            - storage: publickey and array allocate refresh tokens used to
