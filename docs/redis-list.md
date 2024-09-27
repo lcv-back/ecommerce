@@ -131,7 +131,49 @@ LLEN messages  # Trả về 3 nếu danh sách có 3 phần tử
   **Ví dụ**:
 
 ```bash
+BLPOP messages 0  # Chặn vô thời hạn cho đến khi có phần tử
+BLPOP messages 5  # Chặn trong tối đa 5 giây
+
+```
+
+### 2.8. `BLPOP`
+
+- **Công dụng**: Lấy và loại bỏ phần tử đầu tiên từ danh sách, nếu danh sách trống sẽ chặn cho đến khi có phần tử mới hoặc hết thời gian chờ (timeout).
+
+- **Cú pháp**:
+
+  ```bash
+  BLPOP key [key ...] timeout
+
+  ```
+
+  **Ví dụ**:
+
+```bash
 LREM messages 1 "Hello"  # Xóa 1 phần tử có giá trị "Hello"
+```
+
+### 2.9. `LINSERT`
+
+- **Công dụng**: Chèn một phần tử vào danh sách trước hoặc sau một phần tử khác.
+- **Cú pháp**:
+
+  ```bash
+  LINSERT key BEFORE|AFTER pivot value
+
+  ```
+
+  **Giải thích**:
+
+  - BEFORE: Chèn phần tử mới trước pivot.
+  - AFTER: Chèn phần tử mới sau pivot.
+
+  **Ví dụ**:
+
+```bash
+LINSERT messages BEFORE "World" "Redis"
+# Danh sách sau lệnh: ["Hello", "Redis", "World"]
+
 ```
 
 ## 3. Khi nào nên sử dụng Redis Lists?
@@ -141,7 +183,7 @@ LREM messages 1 "Hello"  # Xóa 1 phần tử có giá trị "Hello"
   - Dễ dàng thêm/xóa phần tử từ đầu hoặc cuối danh sách.
   - Tối ưu cho các hệ thống cần lưu trữ chuỗi sự kiện hoặc log.
 
-### Ví dụ khi dùng Hashes:
+### Ví dụ khi dùng Lists:
 
 Giả sử bạn có một hệ thống xử lý hàng đợi công việc. Sử dụng Redis Lists để lưu trữ và xử lý các công việc theo thứ tự FIFO (first-in, first-out):
 

@@ -13,8 +13,6 @@
 HMSET user:1000 name "John Doe" age 30 email "johndoe@example.com"
 ```
 
----
-
 ## 2. Các lệnh phổ biến
 
 ### 2.1. `HSET`
