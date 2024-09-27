@@ -11,7 +11,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
-        "express": "^4.19.2",
+        "express": "^4.21.0",
         "redis": "^4.7.0",
         "slugify": "^1.6.6"
     },
