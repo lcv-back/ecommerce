@@ -11,13 +11,14 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "@redis/client": "^1.6.0",
+        "bcrypt": "^5.1.1",
         "ecommerce-backend-nodejs": "file:",
         "express": "^4.21.0",
-        "redis": "^4.7.0",
+        "redis": "^3.1.2",
         "slugify": "^1.6.6"
     },
     "devDependencies": {
-        "bcrypt": "^5.1.1",
         "compression": "^1.7.4",
         "crypto": "^1.0.1",
         "dotenv": "^16.4.5",

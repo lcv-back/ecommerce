@@ -40,8 +40,8 @@ class CheckoutService {
         userId,
         shop_order_ids = [],
     }) {
-        // check cartId is contain
-        const foundCart = await findCartById(cartId);
+        // check cartId is contain?
+        const foundCart = await findCartById(cartId)
         if (!foundCart) throw new BadRequestError('Cart not found')
 
         const checkout_order = {

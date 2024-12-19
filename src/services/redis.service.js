@@ -1,54 +1,53 @@
 'use strict';
 
-const redis = require('redis');
-const { promisify } = require('util'); // Convert a callback-based function to an async-await one
+const redis = require('@redis/client'); // Đảm bảo sử dụng Redis client v4 trở lên
 const { reservationInventory } = require('../models/repositories/inventory.repo');
+
+// Tạo Redis client
 const redisClient = redis.createClient();
 
-const pexpire = promisify(redisClient.pExpire).bind(redisClient);
-const setnxAsync = promisify(redisClient.setNX).bind(redisClient);
-
-// gianh quyen khoa
+// Gianh quyền khóa
 const acquireLock = async(productId, quantity, cartId) => {
-    const key = `lock_v2024_${productId}`; // 
-    const retryTimes = 10; // cho phep thread or process co the cho trong bao nhieu lan
-    const expireTime = 3000; // time out is 3 second
+    const key = `lock_v2024_${productId}`; // Tên khóa dựa trên productId
+    const retryTimes = 10; // Số lần thử
+    const expireTime = 3000; // Thời gian hết hạn (3 giây)
 
-    for (let i = 0; i < retryTimes.length; i++) {
-        // create key, who keep the key can payment
-        const result = await setnxAsync(key, expireTime)
+    for (let i = 0; i < retryTimes; i++) {
+        // Thử tạo khóa và kiểm tra xem có thể chiếm được khóa không
+        const result = await redisClient.setNX(key, expireTime);
         console.log(`result::`, result);
 
         if (result === 1) {
-            // thao tac voi inventory
+            // Thao tác với inventory nếu chiếm được khóa
             const isReservation = await reservationInventory({
                 productId,
                 quantity,
                 cartId
-            })
+            });
 
             if (isReservation.modifiedCount) {
-                await pexpire(key, expireTime) // giai phong key cho nguoi khac thanh toan
-                return key
+                // Nếu thành công, thiết lập thời gian hết hạn và trả khóa lại
+                await redisClient.pexpire(key, expireTime); // Giải phóng khóa sau khi hoàn thành
+                return key;
             }
 
-            return null
+            return null; // Nếu không thể đặt hàng, trả về null
         } else {
-            await new Promise((resolve) => setTimeout(resolve, 50))
+            // Nếu không chiếm được khóa, chờ 50ms và thử lại
+            await new Promise((resolve) => setTimeout(resolve, 50));
         }
-
-
-
     }
-}
 
-// giai phong khoa
-const releaseLock = async keyLock => {
-    const delAsyncKey = promisify(redisClient.del).bind(redisClient)
-    return await delAsyncKey(keyLock)
-}
+    return null; // Trả về null nếu không chiếm được khóa sau khi thử hết retryTimes
+};
+
+// Giải phóng khóa
+const releaseLock = async(keyLock) => {
+    // Xóa khóa khỏi Redis
+    await redisClient.del(keyLock);
+};
 
 module.exports = {
     acquireLock,
     releaseLock
-}
+};
