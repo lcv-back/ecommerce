@@ -28,13 +28,16 @@ const createTokenPair = async(payload, publicKey, privateKey) => {
         });
 
         // verify the refresh token
-        JWT.verify(accessToken, publicKey, (err, decoded) => {
+        JWT.verify(accessToken, publicKey, { algorithms: ['RS256'] }, (err, decoded) => {
             if (err) {
                 console.error(`error verifying::`, err);
             } else {
                 console.log(`decoded verify::`, decoded);
             }
         });
+
+
+
 
         return {
             accessToken,
@@ -64,7 +67,10 @@ const authentication = asyncHandler(async(req, res, next) => {
     if (!keyStore) throw new NotFoundError('Not found keyStore')
 
     // 3 - verify token
-    const accessToken = req.headers[HEADER.AUTHORIZATION]
+    // const accessToken = req.headers[HEADER.AUTHORIZATION]
+    // test fix bug: invalid signature
+    const decodeUser = JWT.verify(accessToken, keyStore.publicKey, { algorithms: ['RS256'] });
+
     if (!accessToken) throw new AuthFailureError('Invalid Request')
 
     // 4 - check keyStore with this userId

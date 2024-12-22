@@ -26,6 +26,9 @@ router.use('/v1/api/cart', require('./cart'))
 // router for product
 router.use('/v1/api/product', require('./product'))
 
+// router for comment
+router.use('/v1/api/comment', require('./comment'))
+
 // router for access: login, logout and sign in
 router.use('/v1/api', require('./access'))
 
