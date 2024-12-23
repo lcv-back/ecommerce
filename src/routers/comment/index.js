@@ -7,7 +7,7 @@ const asyncHandler = require('../../helpers/asyncHandler')
 const { authenticationV2 } = require('../../auth/authUtils')
 
 // authentication
-router.use(authenticationV2)
+//router.use(authenticationV2)
 
 router.post('', asyncHandler(CommentController.createComment))
 

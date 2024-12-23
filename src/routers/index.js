@@ -9,7 +9,7 @@ router.use(apiKey)
 
 
 // check permission
-router.use(permission('0000'))
+//router.use(permission('0000'))
 
 // router for checkout
 router.use('/v1/api/checkout', require('./checkout'))

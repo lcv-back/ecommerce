@@ -8,7 +8,7 @@ class InventoryServiceTest {
     }
 
     static updateInventory(productId, quantity) {
-        console.log(`Updated inventory: ${productId} with quantity: ${quantity}`)
+        //console.log(`Updated inventory: ${productId} with quantity: ${quantity}`)
     }
 }
 
