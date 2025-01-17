@@ -83,13 +83,22 @@ class AccessService {
         }
 
         // 2 - match password
-        const match = bcrypt.compare(password, foundShop.password)
+        const match = await bcrypt.compare(password, foundShop.password)
 
         if (!match) throw new AuthFailureError('Authentication failed!')
 
         // 3 - create access and refresh and save
-        const privateKey = crypto.randomBytes(64).toString('hex')
-        const publicKey = crypto.randomBytes(64).toString('hex')
+        const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: {
+                type: 'spki',
+                format: 'pem'
+            },
+            privateKeyEncoding: {
+                type: 'pkcs8',
+                format: 'pem'
+            }
+        });
 
         // 4 - generate tokens
         const { _id: userId } = foundShop
@@ -133,8 +142,17 @@ class AccessService {
         if (newShop) {
             // created privateKey, publicKey
 
-            const privateKey = crypto.randomBytes(64).toString('hex')
-            const publicKey = crypto.randomBytes(64).toString('hex')
+            const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+                modulusLength: 2048, // Độ dài của khóa
+                publicKeyEncoding: {
+                    type: 'spki',
+                    format: 'pem'
+                },
+                privateKeyEncoding: {
+                    type: 'pkcs8',
+                    format: 'pem'
+                }
+            });
 
             console.log({ privateKey, publicKey }); // save collection KeyStore
 

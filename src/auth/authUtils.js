@@ -14,52 +14,18 @@ const HEADER = {
     REFRESHTOKEN: 'x-rtoken-id',
 }
 
-
-// const createTokenPair = async(payload, publicKey, privateKey) => {
-//     try {
-//         // create access token through private key
-//         const accessToken = await JWT.sign(payload, publicKey, {
-//             expiresIn: '2 days'
-//         });
-
-//         // create refresh token through public key
-//         const refreshToken = await JWT.sign(payload, privateKey, {
-//             expiresIn: '7 days'
-//         });
-
-//         // verify the refresh token
-//         JWT.verify(accessToken, publicKey, (err, decoded) => {
-//             if (err) {
-//                 console.error(`error verifying::`, err);
-//             } else {
-//                 console.log(`decoded verify::`, decoded);
-//             }
-//         });
-
-
-
-
-//         return {
-//             accessToken,
-//             refreshToken
-//         };
-//     } catch (error) {
-//         return error;
-//     }
-// };
-
 const createTokenPair = async(payload, publicKey, privateKey) => {
     try {
-        // create access token through private key
-        const accessToken = await JWT.sign(payload, privateKey, {
-            algorithm: 'RS256', // Chỉ định thuật toán
-            expiresIn: '2 days'
+        // create access token using private key
+        const accessToken = JWT.sign(payload, privateKey, {
+            algorithm: 'RS256',
+            expiresIn: '2d'
         });
 
-        // create refresh token through private key
-        const refreshToken = await JWT.sign(payload, privateKey, {
-            algorithm: 'RS256', // Chỉ định thuật toán
-            expiresIn: '7 days'
+        // create refresh token using private key
+        const refreshToken = JWT.sign(payload, privateKey, {
+            algorithm: 'RS256',
+            expiresIn: '7d'
         });
 
         // verify the access token using public key
@@ -80,15 +46,12 @@ const createTokenPair = async(payload, publicKey, privateKey) => {
             }
         });
 
-        return {
-            accessToken,
-            refreshToken
-        };
+        return { accessToken, refreshToken };
     } catch (error) {
-        return error;
+        console.error(`Error creating token pair:`, error);
+        throw new Error('Error creating token pair');
     }
 };
-
 
 const authentication = asyncHandler(async(req, res, next) => {
     /*
@@ -128,51 +91,6 @@ const authentication = asyncHandler(async(req, res, next) => {
     }
 })
 
-// const authenticationV2 = asyncHandler(async(req, res, next) => {
-//     // if access token is expired => use refresh token => check refresh token have contain
-//     const userId = req.headers[HEADER.CLIENT_ID]
-//     if (!userId) throw new AuthFailureError('Invalid Request on line')
-
-//     const keyStore = await findByUserId(userId)
-//     if (!keyStore) throw new NotFoundError('Not found keyStore')
-
-//     if (req.headers[HEADER.REFRESHTOKEN]) {
-//         try {
-//             const refreshToken = req.headers[HEADER.REFRESHTOKEN]
-
-//             const decodeUser = JWT.verify(refreshToken, keyStore.privateKey)
-
-//             if (userId !== decodeUser.userId) throw new AuthFailureError('Invalid UserId')
-
-//             req.keyStore = keyStore
-//             req.user = decodeUser
-
-//             req.refreshToken = refreshToken
-//             return next()
-//         } catch (error) {
-//             throw error
-//         }
-//     }
-
-//     // 3 - verify token
-//     const accessToken = req.headers[HEADER.AUTHORIZATION]
-//     if (!accessToken) throw new AuthFailureError('Invalid Request')
-
-//     // 4 - check keyStore with this userId
-//     try {
-//         // const decodeUser = JWT.verify(accessToken, keyStore.publicKey)
-//         const decodeUser = JWT.verify(accessToken, keyStore.publicKey);
-//         req.user = decodeUser;
-//         if (userId !== decodeUser.userId) throw new AuthFailureError('Invalid UserId')
-//         req.keyStore = keyStore
-
-//         // 5 - ok all => return next
-//         return next()
-//     } catch (error) {
-//         throw error
-//     }
-// })
-
 const authenticationV2 = asyncHandler(async(req, res, next) => {
     // 1. Lấy userId từ headers
     const userId = req.headers[HEADER.CLIENT_ID]
@@ -198,7 +116,7 @@ const authenticationV2 = asyncHandler(async(req, res, next) => {
             req.refreshToken = refreshToken
             return next()
         } catch (error) {
-            throw error
+            throw new AuthFailureError('Refresh token verification failed: ' + error.message);
         }
     }
 
@@ -215,18 +133,18 @@ const authenticationV2 = asyncHandler(async(req, res, next) => {
 
         return next()
     } catch (error) {
-        throw error
+        throw new AuthFailureError('Access token verification failed: ' + error.message);
     }
 })
 
-
-// const verifyJWT = async(token, keySecret) => {
-//     return await JWT.verify(token, keySecret)
-// }
-
 const verifyJWT = async(token, keySecret) => {
-    return await JWT.verify(token, keySecret, { algorithms: ['RS256'] })
-}
+    try {
+        return await JWT.verify(token, keySecret, { algorithms: ['RS256'] });
+    } catch (error) {
+        throw new Error('Token verification failed: ' + error.message);
+    }
+};
+
 
 
 module.exports = {
